@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="munit-poc-test-suite.xml" />
+	<munit:test name="munit-poc-test-suite-munit-poc-flow-test" doc:id="815b628a-ef23-4169-984b-2d4e2f3dc2ed" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="5fcabc70-d9b2-408a-82c5-5a70361f2fbc" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="JSON Placeholder" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="293398ea-fc28-40a4-aab1-79fca79c90d5" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;  "userId": 1,&#10;  "id": 4,&#10;  "title": "quis ut nam facilis et officia qui",&#10;  "completed": false&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy" doc:id="94e819b5-937d-4cb0-85a2-2e305cddbab9" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Transform Message" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="3c5a5e4f-1d24-4d65-b4c5-db7e7f7749a0" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert-equals doc:name="Assert equals" doc:id="04da0c98-c9da-4afd-aec8-8859d4e75eef" actual="#[payload.completed]" expected="#[false]" message='#["Completed Field != false before call"]'/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert-equals doc:name="Assert equals" doc:id="6f45ef4a-2cbb-4122-b4fc-8b0e57e54761" actual="#[payload.completed]" expected='#["True"]' message='#["Completed Field != true after call"]' />
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to munit-pocFlow" doc:id="c094e152-a698-41c4-8511-d04a4053a328" name="munit-pocFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="ddafb120-fffe-4aa2-9f8c-5090a49fac38" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="LOG INFO" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="3d9214f5-b883-4ed7-b1fe-45ad8c4b34c4" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+</mule>

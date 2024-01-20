@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="38b53eec-fbbc-487a-bf87-24b68544e9d3" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="43b3f3ce-b2d6-4829-995d-6be4e13b8391" >
+		<http:request-connection host="jsonplaceholder.typicode.com" port="443" />
+	</http:request-config>
+	<flow name="munit-pocFlow" doc:id="c49e2bff-54f8-4e07-a8a5-dd7815a34b6a" >
+		<http:listener doc:name="Listener" doc:id="f511e4c1-42cb-4d1f-9af9-e87102746a01" config-ref="HTTP_Listener_config" path="/munit-poc"/>
+		<logger level="INFO" doc:name="LOG INFO" doc:id="96dd6e8a-be94-4f24-aa4f-79d63975e7f4" message='#["Request Received at $(now())"]'/>
+		<http:request method="GET" doc:name="JSON Placeholder" doc:id="293398ea-fc28-40a4-aab1-79fca79c90d5" config-ref="HTTP_Request_configuration" url="https://jsonplaceholder.typicode.com/todos/2"/>
+		<logger level="INFO" doc:name="LOG INFO" doc:id="dc0889ab-dc6c-4181-b898-f6a03908658e" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="3c5a5e4f-1d24-4d65-b4c5-db7e7f7749a0">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    Id: payload.id,
+    userId: payload.userId,
+    title: payload.title,
+    (completed: 'True') if(!payload.completed)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="LOG INFO" doc:id="3d9214f5-b883-4ed7-b1fe-45ad8c4b34c4" message="#[payload]" />
+	</flow>
+</mule>
